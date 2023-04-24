@@ -98,28 +98,26 @@ const eliminarLibro = async (req, res = response) => {
 const uploadImage = async (req, res = response) => {
     try {
         const { id } = req.params;
-        const { file } = req;
+        const { file } = req.files;
         const libro = await Libro.findById(id);
         if (!libro) {
             return res.status(400).json({ error: "libro no encontrado" });
         }
 
-        //validar extencion
         const extencionesValidas = ["png", "jpg", "jpeg", "gif"];
-        const extencion = file.originalname.split(".");
-        if (!extencionesValidas.includes(extencion[extencion.length - 1])) {
+        const extencion = file.name.split(".");
+        if (!extencionesValidas.includes(extencion[extencion.length - 1].toLowerCase())) {
             return res.status(400).json({ error: "extencion no valida" });
         }
 
-  
         const nombre = `${uuidv4()}.${extencion[extencion.length - 1]}`;
 
-        const url = await uploadFile(file, nombre);
+        await uploadFile(file, nombre);
 
-        libro.imagen = url;
+        libro.imagen = nombre;
         await libro.save();
 
-        return res.json({ libro, ok: true, msg: "imagen subida" });
+        return res.json({ libro, key: nombre, ok: true, msg: "imagen subida" });
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: "error al subir imagen" });
@@ -143,4 +141,12 @@ const getImage = async (req, res = response) => {
     }
 };
 
-module.exports = { getLibros, getLibro, crearLibro, actualizarLibro, eliminarLibro, uploadImage, getImage };
+module.exports = {
+    getLibros,
+    getLibro,
+    crearLibro,
+    actualizarLibro,
+    eliminarLibro,
+    uploadImage,
+    getImage,
+};
