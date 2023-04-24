@@ -12,6 +12,8 @@ server.use(cors());
 server.use(express.json());
 
 server.use("/autor", require("./routes/autor.routes"));
+server.use("/libro", require("./routes/libro.routes"));
+server.use("/categoria", require("./routes/categoria.routes"));
 
 server.listen(puerto, () => {
   console.log("servidor levantado en el puerto " + puerto);
